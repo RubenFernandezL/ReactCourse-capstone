@@ -1,23 +1,14 @@
-import { Routes, Route, Outlet } from "react-router-dom";
-
+import { Routes, Route } from "react-router-dom";
 import Home from "./routes/home/home.container";
-
-const NavBar = () => {
-  return (
-    <div>
-      <div>
-        <h1>I am the navbar</h1>
-      </div>
-      <Outlet></Outlet>
-    </div>
-  );
-};
+import NavBar from "./components/core/navbar/navbar.container";
+import SignIn from "./routes/sign-in/sign-in.container";
 
 const App = () => {
   return (
     <Routes>
       <Route path="/" element={<NavBar></NavBar>}>
         <Route index element={<Home></Home>}></Route>
+        <Route path="sign-in" element={<SignIn></SignIn>}></Route>
       </Route>
     </Routes>
   );
