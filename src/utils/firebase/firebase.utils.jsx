@@ -1,5 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -19,25 +24,83 @@ provider.setCustomParameters({
   prompt: "select_account",
 });
 
-export const auth = getAuth();
-export const signInWithGooglePopUp = () => signInWithPopup(auth, provider);
+const auth = getAuth();
+const database = getFirestore();
 
-export const database = getFirestore();
+const AuthMethod = {
+  GOOGLE: 1,
+  EMAIL_AND_PASSWORD: 2,
+};
 
-export const createUserDocumentFromAuth = async (userAuth) => {
-  const userDocRef = doc(database, "users", userAuth.uid);
-  const userSnapshot = await getDoc(userDocRef);
-  if (!userSnapshot.exists()) {
-    const createdAt = new Date();
-    const { displayName, email } = userAuth;
-    try {
-      await setDoc(userDocRef, {
+const collection = "users";
+
+export const loginWithGoogle = async () => {
+  const { user } = await getUserAuth(AuthMethod.GOOGLE);
+  if (user) {
+    const userRef = getUserRef(user.uid);
+    const snapshot = await getUserSnapshot(userRef);
+    const { displayName, email } = user;
+    if (!snapshot.exists()) {
+      return await saveUser(userRef, {
         displayName,
         email,
-        createdAt,
+        createdAt: new Date(),
       });
-    } catch (error) {
-      console.log(error);
+    } else return userRef;
+  }
+};
+
+export const createUser = async (email, password, displayName) => {
+  const { user } = await getUserAuth(
+    AuthMethod.EMAIL_AND_PASSWORD,
+    email,
+    password
+  );
+  if (user) {
+    const userRef = getUserRef(user.uid);
+    const snapshot = await getUserSnapshot(userRef);
+    if (!snapshot.exists()) {
+      return await saveUser(userRef, {
+        displayName,
+        email,
+        createdAt: new Date(),
+      });
+    } else return userRef;
+  }
+};
+
+const getUserAuth = async (authMethod, email, password) => {
+  try {
+    switch (authMethod) {
+      case AuthMethod.EMAIL_AND_PASSWORD:
+        return await createUserWithEmailAndPassword(auth, email, password);
+      case AuthMethod.GOOGLE:
+        return await signInWithPopup(auth, provider);
+      default:
+        return null;
     }
-  } else return userDocRef;
+  } catch (error) {
+    alert(error);
+  }
+};
+
+const getUserRef = (uid) => {
+  return doc(database, collection, uid);
+};
+
+const getUserSnapshot = async (userRef) => {
+  return await getDoc(userRef);
+};
+
+const saveUser = async (docRef, user) => {
+  try {
+    const { displayName, email, createdAt } = user;
+    await setDoc(docRef, {
+      displayName,
+      email,
+      createdAt,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };
