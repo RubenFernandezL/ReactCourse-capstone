@@ -1,7 +1,8 @@
-import { Outlet, Link } from "react-router-dom";
 import { Fragment } from "react";
+import { Link } from "react-router-dom";
 import { ReactComponent as CrownLogo } from "../../../assets/crown.svg";
 import "./navbar.scss";
+import { Outlet } from "react-router-dom";
 
 const NavBar = () => {
   return (
@@ -11,8 +12,8 @@ const NavBar = () => {
           <CrownLogo className="logo"></CrownLogo>
         </Link>
         <div className="nav-links-container">
-          <Link className="nav-link" to="/test">
-            SHOP
+          <Link className="nav-link" to="/sign-in">
+            SING IN
           </Link>
         </div>
       </div>
