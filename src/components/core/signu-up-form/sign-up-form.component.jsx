@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { createUser } from "../../../utils/firebase/firebase.utils";
+import ButtonComponent from "../form-components/button/button.component";
+import FormInput from "../form-components/input/input.component";
+import "./sign-up-form.scss";
+
 const defaultFormFields = {
   displayName: "",
   email: "",
@@ -41,8 +45,9 @@ const SignUpForm = () => {
     setFormFields({ ...formFields, [name]: value });
   };
   return (
-    <div>
-      <h1>Sign up with your email and password</h1>
+    <div className="sign-up-container">
+      <h2>Don't have an account?</h2>
+      <span>Sign up with your email and password</span>
       <form
         onSubmit={async (event) => {
           try {
@@ -53,41 +58,41 @@ const SignUpForm = () => {
           }
         }}
       >
-        <label>Display name</label>
-        <input
+        <FormInput
+          label="Display name"
           type="text"
           required
           onChange={changeHandler}
           name="displayName"
           value={displayName}
-        ></input>
-        <label>Email</label>
-        <input
+        ></FormInput>
+        <FormInput
+          label="Email"
           type="email"
           required
           onChange={changeHandler}
           name="email"
           value={email}
-        ></input>
-        <label>Password</label>
-        <input
+        ></FormInput>
+        <FormInput
+          label="Password"
           type="password"
           minLength={6}
           required
           onChange={changeHandler}
           name="password"
           value={password}
-        ></input>
-        <label>Confirm password</label>
-        <input
+        ></FormInput>
+        <FormInput
+          label="Confirm password"
           type="password"
           minLength={6}
           required
           onChange={changeHandler}
           name="confirmPassword"
           value={confirmPassword}
-        ></input>
-        <button type="submit">Sign up</button>
+        ></FormInput>
+        <ButtonComponent type="submit">Sign up</ButtonComponent>
       </form>
     </div>
   );
