@@ -4,6 +4,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
 
@@ -34,9 +35,10 @@ const AuthMethod = {
 
 const collection = "users";
 
-export const loginWithGoogle = async () => {
-  const { user } = await getUserAuth(AuthMethod.GOOGLE);
-  if (user) {
+export const loginWithGoogle = async (event) => {
+  const userAuth = await getUserAuth(AuthMethod.GOOGLE);
+  if (userAuth) {
+    const user = { userAuth };
     const userRef = getUserRef(user.uid);
     const snapshot = await getUserSnapshot(userRef);
     const { displayName, email } = user;
@@ -51,22 +53,25 @@ export const loginWithGoogle = async () => {
 };
 
 export const createUser = async (email, password, displayName) => {
-  const { user } = await getUserAuth(
-    AuthMethod.EMAIL_AND_PASSWORD,
-    email,
-    password
-  );
-  if (user) {
-    const userRef = getUserRef(user.uid);
-    const snapshot = await getUserSnapshot(userRef);
-    if (!snapshot.exists()) {
-      return await saveUser(userRef, {
-        displayName,
-        email,
-        createdAt: new Date(),
-      });
-    } else return userRef;
-  }
+  if (email && password && displayName) {
+    const userAuth = await getUserAuth(
+      AuthMethod.EMAIL_AND_PASSWORD,
+      email,
+      password
+    );
+    if (userAuth) {
+      const { user } = userAuth;
+      const userRef = getUserRef(user.uid);
+      const snapshot = await getUserSnapshot(userRef);
+      if (!snapshot.exists()) {
+        return await saveUser(userRef, {
+          displayName,
+          email,
+          createdAt: new Date(),
+        });
+      } else return userRef;
+    }
+  } else alert("Nope");
 };
 
 const getUserAuth = async (authMethod, email, password) => {
@@ -103,4 +108,10 @@ const saveUser = async (docRef, user) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+export const loginWithEmailAndPassword = async (email, password) => {
+  if (email && password)
+    return await signInWithEmailAndPassword(auth, email, password);
+  else alert("Nope");
 };

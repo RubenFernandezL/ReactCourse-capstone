@@ -7,7 +7,12 @@ export const BUTTON_TYPE = {
 };
 
 const ButtonComponent = ({ children, buttonType, ...otherProps }) => (
-  <button className={`button-container ${buttonType}`}>{children}</button>
+  <button
+    className={`button-container ${BUTTON_TYPE[buttonType]}`}
+    {...otherProps}
+  >
+    {children}
+  </button>
 );
 
 export default ButtonComponent;

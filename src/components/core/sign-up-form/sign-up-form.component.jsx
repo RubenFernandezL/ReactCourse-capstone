@@ -19,7 +19,7 @@ const SignUpForm = () => {
     event.preventDefault();
     if (isValidPassword() && areFielsValid())
       await createUser(email, password, displayName);
-    else console.log("Nope");
+    else alert("Nope");
   };
 
   const isValidPassword = () => {

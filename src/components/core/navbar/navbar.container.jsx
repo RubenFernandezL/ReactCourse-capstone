@@ -12,7 +12,7 @@ const NavBar = () => {
           <CrownLogo className="logo"></CrownLogo>
         </Link>
         <div className="nav-links-container">
-          <Link className="nav-link" to="/sign-in">
+          <Link className="nav-link" to="/auth">
             SING IN
           </Link>
         </div>
