@@ -33,7 +33,7 @@ const SignInForm = () => {
   };
   return (
     <div className="sign-up-container">
-      <h2>Don't have an account?</h2>
+      <h2>Already have an account?</h2>
       <span>Sign in with your email and password</span>
       <form
         onSubmit={async (event) => {
@@ -42,7 +42,7 @@ const SignInForm = () => {
             const response = await loginWithEmailAndPassword(email, password);
             console.log(response);
           } catch (error) {
-            console.log(error);
+            alert(error);
           }
         }}
       >

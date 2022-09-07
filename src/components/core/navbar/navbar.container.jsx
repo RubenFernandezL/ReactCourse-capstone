@@ -15,6 +15,9 @@ const NavBar = () => {
           <Link className="nav-link" to="/auth">
             SING IN
           </Link>
+          <Link className="nav-link" to="/">
+            HOME
+          </Link>
         </div>
       </div>
       <Outlet></Outlet>
