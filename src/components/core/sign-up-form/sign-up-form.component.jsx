@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { createUser } from "../../../utils/firebase/firebase.utils";
 import ButtonComponent from "../form-components/button/button.component";
 import FormInput from "../form-components/input/input.component";
 import "./sign-up-form.scss";
+import { UserContext } from "../../../contexts/user.context";
 
 const defaultFormFields = {
   displayName: "",
@@ -14,13 +15,7 @@ const defaultFormFields = {
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
-
-  const registerUser = async (event) => {
-    event.preventDefault();
-    if (isValidPassword() && areFielsValid())
-      await createUser(email, password, displayName);
-    else alert("Nope");
-  };
+  const { setCurrentUser } = useContext(UserContext);
 
   const isValidPassword = () => {
     return password === confirmPassword;
@@ -44,6 +39,7 @@ const SignUpForm = () => {
     const { name, value } = event.target;
     setFormFields({ ...formFields, [name]: value });
   };
+
   return (
     <div className="sign-up-container">
       <h2>Don't have an account?</h2>
@@ -51,7 +47,11 @@ const SignUpForm = () => {
       <form
         onSubmit={async (event) => {
           try {
-            await registerUser(event);
+            event.preventDefault();
+            if (isValidPassword() && areFielsValid()) {
+              const user = await createUser(email, password, displayName);
+              setCurrentUser(user);
+            } else alert("Nope");
             setFormFields(defaultFormFields);
           } catch (error) {
             console.log(error);

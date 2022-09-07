@@ -38,17 +38,18 @@ const collection = "users";
 export const loginWithGoogle = async (event) => {
   const userAuth = await getUserAuth(AuthMethod.GOOGLE);
   if (userAuth) {
-    const user = { userAuth };
+    const { user } = userAuth;
     const userRef = getUserRef(user.uid);
     const snapshot = await getUserSnapshot(userRef);
     const { displayName, email } = user;
     if (!snapshot.exists()) {
-      return await saveUser(userRef, {
+      await saveUser(userRef, {
         displayName,
         email,
         createdAt: new Date(),
       });
-    } else return userRef;
+    }
+    return user;
   }
 };
 
@@ -63,13 +64,13 @@ export const createUser = async (email, password, displayName) => {
       const { user } = userAuth;
       const userRef = getUserRef(user.uid);
       const snapshot = await getUserSnapshot(userRef);
-      if (!snapshot.exists()) {
-        return await saveUser(userRef, {
+      if (!snapshot.exists())
+        await saveUser(userRef, {
           displayName,
           email,
           createdAt: new Date(),
         });
-      } else return userRef;
+      return user;
     }
   } else alert("Nope");
 };
@@ -111,7 +112,8 @@ const saveUser = async (docRef, user) => {
 };
 
 export const loginWithEmailAndPassword = async (email, password) => {
-  if (email && password)
-    return await signInWithEmailAndPassword(auth, email, password);
-  else alert("Nope");
+  if (email && password) {
+    const { user } = await signInWithEmailAndPassword(auth, email, password);
+    return user;
+  } else alert("Nope");
 };

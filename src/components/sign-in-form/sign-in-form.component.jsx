@@ -5,7 +5,11 @@ import {
   loginWithGoogle,
   loginWithEmailAndPassword,
 } from "../../utils/firebase/firebase.utils";
+
+import { UserContext } from "../../contexts/user.context";
+
 import "./sign-in-form.scss";
+import { useContext } from "react";
 
 const defaultFormFields = {
   email: "",
@@ -15,22 +19,19 @@ const defaultFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
   const { email, password } = formFields;
-
-  // const areFielsValid = () => {
-  //   return (
-  //     password !== "" &&
-  //     password !== null &&
-  //     password !== undefined &&
-  //     email !== "" &&
-  //     email !== null &&
-  //     email !== undefined
-  //   );
-  // };
+  const { setCurrentUser } = useContext(UserContext);
 
   const changeHandler = (event) => {
     const { name, value } = event.target;
     setFormFields({ ...formFields, [name]: value });
   };
+
+  const loginWithGooglePopUp = async () => {
+    const user = await loginWithGoogle();
+    setCurrentUser(user);
+    setFormFields(defaultFormFields);
+  };
+
   return (
     <div className="sign-up-container">
       <h2>Already have an account?</h2>
@@ -39,8 +40,9 @@ const SignInForm = () => {
         onSubmit={async (event) => {
           try {
             event.preventDefault();
-            const response = await loginWithEmailAndPassword(email, password);
-            console.log(response);
+            const user = await loginWithEmailAndPassword(email, password);
+            setCurrentUser(user);
+            setFormFields(defaultFormFields);
           } catch (error) {
             alert(error);
           }
@@ -67,7 +69,7 @@ const SignInForm = () => {
           <ButtonComponent type="submit">Sign in</ButtonComponent>
           <ButtonComponent
             type="button"
-            onClick={loginWithGoogle}
+            onClick={loginWithGooglePopUp}
             buttonType="Google"
           >
             Google sign in
