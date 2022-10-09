@@ -19,3 +19,12 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.cursor-pointer {
+  cursor: pointer;
+  height: 20px;
+  &:hover {
+    filter: invert(51%) sepia(99%) saturate(3115%) hue-rotate(163deg)
+      brightness(97%) contrast(101%);
+  }
+}
