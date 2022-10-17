@@ -8,7 +8,14 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  writeBatch,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDRjPZLN0krdBPmGAACmLGUQlfWjPA0OLg",
@@ -30,12 +37,26 @@ provider.setCustomParameters({
 const auth = getAuth();
 const database = getFirestore();
 
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  documentsToAdd
+) => {
+  const collectionReference = collection(database, collectionKey);
+  const batch = writeBatch(database);
+  documentsToAdd.forEach((document) => {
+    const docRef = doc(collectionReference, document.title.toLowerCase());
+    batch.set(docRef, document);
+  });
+
+  await batch.commit();
+};
+
 const AuthMethod = {
   GOOGLE: 1,
   EMAIL_AND_PASSWORD: 2,
 };
 
-const collection = "users";
+const usersCollection = "users";
 
 export const loginWithGoogle = async (event) => {
   const userAuth = await getUserAuth(AuthMethod.GOOGLE);
@@ -93,7 +114,7 @@ const getUserAuth = async (authMethod, email, password) => {
 };
 
 const getUserRef = (uid) => {
-  return doc(database, collection, uid);
+  return doc(database, usersCollection, uid);
 };
 
 const getUserSnapshot = async (userRef) => {
