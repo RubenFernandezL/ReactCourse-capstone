@@ -1,4 +1,6 @@
-import ButtonComponent from "../form-components/button/button.component";
+import ButtonComponent, {
+  BUTTON_TYPE,
+} from "../form-components/button/button.component";
 import "./product-card.scss";
 import { useContext } from "react";
 import { CartContext } from "../../../contexts/cart.context";
@@ -15,7 +17,10 @@ export const ProductCard = ({ product }) => {
         <span className="name">{name}</span>
         <span className="price">{price}</span>
       </div>
-      <ButtonComponent onClick={addProductToCart} buttonType="Inverted">
+      <ButtonComponent
+        onClick={addProductToCart}
+        buttonType={BUTTON_TYPE.Inverted}
+      >
         Add to card
       </ButtonComponent>
     </div>
