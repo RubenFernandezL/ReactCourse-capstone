@@ -10,11 +10,11 @@ import {
 } from "./cart-dropdown.styles";
 
 const CartDropDownComponent = () => {
-  const { isCartOpen, setIsCartOpen, cartItems } = useContext(CartContext);
+  const { isCartOpen, toggleCart, cartItems } = useContext(CartContext);
   const navigate = useNavigate();
 
   const goToCheckOut = () => {
-    setIsCartOpen(!isCartOpen);
+    toggleCart(!isCartOpen);
     navigate("/check-out");
   };
 

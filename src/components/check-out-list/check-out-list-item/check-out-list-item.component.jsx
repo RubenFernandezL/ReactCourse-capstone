@@ -4,11 +4,12 @@ import { CartContext } from "../../../contexts/cart.context";
 
 const CheckOutListItemComponent = ({ item }) => {
   const { name, quantity, imageUrl, price } = item;
-  const { addItemToCart, substractItemFromCart } = useContext(CartContext);
+  const { addItemToCart, substractItemFromCart, removeItemFromCart } =
+    useContext(CartContext);
 
   const addProductToCart = () => addItemToCart(item);
   const substractProductFromCart = () => substractItemFromCart(item);
-  const deleteProductFromCart = () => substractItemFromCart(item, true);
+  const deleteProductFromCart = () => removeItemFromCart(item);
 
   return (
     <div className="checkout-item-container">

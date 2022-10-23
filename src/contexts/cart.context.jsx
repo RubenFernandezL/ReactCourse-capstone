@@ -1,80 +1,122 @@
-import { useEffect } from "react";
-import { createContext, useState } from "react";
+import { useReducer } from "react";
+import { createContext } from "react";
 
-export const CartContext = createContext({
+export const CartAction = {
+  ToggleCart: "ToggleCart",
+  AddItem: "AddItem",
+  SubstractItem: "SubstractItem",
+  RemoveItem: "RemoveItem",
+};
+
+const INITIAL_STATE = {
   isCartOpen: false,
-  setIsCartOpen: () => {},
   cartItems: [],
-  addItemToCart: () => {},
   totalItems: 0,
-  setTotalItems: () => {},
   totalPrice: 0,
-  setTotalPrice: () => {},
-});
+};
+
+export const CartContext = createContext(INITIAL_STATE);
+
+const isItemInCart = (item, cartItems) => {
+  const cartIndex = cartItems.findIndex((cartItem) => cartItem.id === item.id);
+  return cartIndex >= 0;
+};
+
+const cartReducer = (state, action) => {
+  const { type, payload } = action;
+
+  switch (type) {
+    case CartAction.AddItem:
+      if (isItemInCart(payload, state.cartItems))
+        return {
+          ...state,
+          cartItems: state.cartItems.map((cartItem) =>
+            cartItem.id === payload.id
+              ? { ...cartItem, quantity: cartItem.quantity + 1 }
+              : cartItem
+          ),
+          totalItems: state.totalItems + 1,
+          totalPrice: state.totalPrice + payload.price,
+        };
+      return {
+        ...state,
+        cartItems: [...state.cartItems, { ...payload, quantity: 1 }],
+        totalItems: state.totalItems + 1,
+        totalPrice: state.totalPrice + payload.price,
+      };
+    case CartAction.SubstractItem:
+      const substractedItem = state.cartItems.find(
+        (cartItem) => cartItem.id === payload.id
+      );
+      if (!substractedItem) return state;
+      if (substractedItem.quantity === 1)
+        return {
+          ...state,
+          cartItems: state.cartItems.filter(
+            (cartItem) => cartItem.id !== substractedItem.id
+          ),
+          totalItems: state.totalItems - 1,
+          totalPrice: state.totalPrice - substractedItem.price,
+        };
+      return {
+        ...state,
+        cartItems: state.cartItems.map((cartItem) =>
+          cartItem.id === substractedItem.id
+            ? { ...cartItem, quantity: cartItem.quantity - 1 }
+            : cartItem
+        ),
+        totalItems: state.totalItems - 1,
+        totalPrice: state.totalPrice - substractedItem.price,
+      };
+    case CartAction.RemoveItem:
+      const removedItem = state.cartItems.find(
+        (cartItem) => cartItem.id === payload.id
+      );
+      if (!removedItem) return state;
+      return {
+        ...state,
+        cartItems: state.cartItems.filter(
+          (cartItem) => cartItem.id !== removedItem.id
+        ),
+        totalItems: state.totalItems - removedItem.quantity,
+        totalPrice: state.totalPrice - removedItem.price * removedItem.quantity,
+      };
+    case CartAction.ToggleCart:
+      return {
+        ...state,
+        isCartOpen: !state.isCartOpen,
+      };
+    default:
+      throw new Error(`Unhandled type ${type} in cartReducer`);
+  }
+};
 
 export const CartProvider = ({ children }) => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPrice, setTotalPrice] = useState(0);
-
-  useEffect(() => {
-    setTotalItems(
-      cartItems.reduce((partialSum, item) => partialSum + item.quantity, 0)
-    );
-  }, [cartItems]);
-
-  useEffect(() => {
-    setTotalPrice(
-      cartItems.reduce(
-        (partialSum, item) => partialSum + item.quantity * item.price,
-        0
-      )
-    );
-  }, [cartItems]);
+  const [{ isCartOpen, cartItems, totalItems, totalPrice }, dispatch] =
+    useReducer(cartReducer, INITIAL_STATE);
 
   const addItemToCart = (item) => {
-    const cartIndex = cartItems.findIndex(
-      (cartItem) => cartItem.id === item.id
-    );
-    if (cartIndex >= 0)
-      setCartItems(
-        cartItems.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
-      );
-    else setCartItems([...cartItems, { ...item, quantity: 1 }]);
+    dispatch({ type: CartAction.AddItem, payload: item });
   };
 
-  const substractItemFromCart = (item, isDelete = false) => {
-    const cartIndex = cartItems.findIndex(
-      (cartItem) => cartItem.id === item.id
-    );
-    if (cartIndex >= 0) {
-      setCartItems(
-        cartItems.reduce((newCart, cartItem) => {
-          if (cartItem.id === item.id) {
-            if (isDelete || cartItem.quantity - 1 === 0) return newCart;
-            return [
-              ...newCart,
-              {
-                ...cartItem,
-                quantity: cartItem.quantity - 1,
-              },
-            ];
-          } else return [...newCart, cartItem];
-        }, [])
-      );
-    }
+  const substractItemFromCart = (item) => {
+    dispatch({ type: CartAction.SubstractItem, payload: item });
+  };
+
+  const removeItemFromCart = (item) => {
+    dispatch({ type: CartAction.RemoveItem, payload: item });
+  };
+
+  const toggleCart = () => {
+    dispatch({ type: CartAction.ToggleCart });
   };
 
   const value = {
     isCartOpen,
-    setIsCartOpen,
+    toggleCart,
     addItemToCart,
     substractItemFromCart,
+    removeItemFromCart,
     cartItems,
     totalItems,
     totalPrice,
