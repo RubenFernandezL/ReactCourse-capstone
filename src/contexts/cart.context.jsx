@@ -1,5 +1,6 @@
 import { useReducer } from "react";
 import { createContext } from "react";
+import { createAction } from "../utils/reducer/reducer.utils";
 
 export const CartAction = {
   ToggleCart: "ToggleCart",
@@ -27,60 +28,11 @@ const cartReducer = (state, action) => {
 
   switch (type) {
     case CartAction.AddItem:
-      if (isItemInCart(payload, state.cartItems))
-        return {
-          ...state,
-          cartItems: state.cartItems.map((cartItem) =>
-            cartItem.id === payload.id
-              ? { ...cartItem, quantity: cartItem.quantity + 1 }
-              : cartItem
-          ),
-          totalItems: state.totalItems + 1,
-          totalPrice: state.totalPrice + payload.price,
-        };
-      return {
-        ...state,
-        cartItems: [...state.cartItems, { ...payload, quantity: 1 }],
-        totalItems: state.totalItems + 1,
-        totalPrice: state.totalPrice + payload.price,
-      };
+      return addItem(payload, state);
     case CartAction.SubstractItem:
-      const substractedItem = state.cartItems.find(
-        (cartItem) => cartItem.id === payload.id
-      );
-      if (!substractedItem) return state;
-      if (substractedItem.quantity === 1)
-        return {
-          ...state,
-          cartItems: state.cartItems.filter(
-            (cartItem) => cartItem.id !== substractedItem.id
-          ),
-          totalItems: state.totalItems - 1,
-          totalPrice: state.totalPrice - substractedItem.price,
-        };
-      return {
-        ...state,
-        cartItems: state.cartItems.map((cartItem) =>
-          cartItem.id === substractedItem.id
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        ),
-        totalItems: state.totalItems - 1,
-        totalPrice: state.totalPrice - substractedItem.price,
-      };
+      return substractItem(payload, state);
     case CartAction.RemoveItem:
-      const removedItem = state.cartItems.find(
-        (cartItem) => cartItem.id === payload.id
-      );
-      if (!removedItem) return state;
-      return {
-        ...state,
-        cartItems: state.cartItems.filter(
-          (cartItem) => cartItem.id !== removedItem.id
-        ),
-        totalItems: state.totalItems - removedItem.quantity,
-        totalPrice: state.totalPrice - removedItem.price * removedItem.quantity,
-      };
+      return removeItem(payload, state);
     case CartAction.ToggleCart:
       return {
         ...state,
@@ -91,24 +43,85 @@ const cartReducer = (state, action) => {
   }
 };
 
+const addItem = (item, state) => {
+  if (isItemInCart(item, state.cartItems))
+    return {
+      ...state,
+      cartItems: state.cartItems.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      ),
+      totalItems: state.totalItems + 1,
+      totalPrice: state.totalPrice + item.price,
+    };
+  return {
+    ...state,
+    cartItems: [...state.cartItems, { ...item, quantity: 1 }],
+    totalItems: state.totalItems + 1,
+    totalPrice: state.totalPrice + item.price,
+  };
+};
+
+const substractItem = (item, state) => {
+  const substractedItem = state.cartItems.find(
+    (cartItem) => cartItem.id === item.id
+  );
+  if (!substractedItem) return state;
+  if (substractedItem.quantity === 1)
+    return {
+      ...state,
+      cartItems: state.cartItems.filter(
+        (cartItem) => cartItem.id !== substractedItem.id
+      ),
+      totalItems: state.totalItems - 1,
+      totalPrice: state.totalPrice - substractedItem.price,
+    };
+  return {
+    ...state,
+    cartItems: state.cartItems.map((cartItem) =>
+      cartItem.id === substractedItem.id
+        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+        : cartItem
+    ),
+    totalItems: state.totalItems - 1,
+    totalPrice: state.totalPrice - substractedItem.price,
+  };
+};
+
+const removeItem = (item, state) => {
+  const removedItem = state.cartItems.find(
+    (cartItem) => cartItem.id === item.id
+  );
+  if (!removedItem) return state;
+  return {
+    ...state,
+    cartItems: state.cartItems.filter(
+      (cartItem) => cartItem.id !== removedItem.id
+    ),
+    totalItems: state.totalItems - removedItem.quantity,
+    totalPrice: state.totalPrice - removedItem.price * removedItem.quantity,
+  };
+};
+
 export const CartProvider = ({ children }) => {
   const [{ isCartOpen, cartItems, totalItems, totalPrice }, dispatch] =
     useReducer(cartReducer, INITIAL_STATE);
 
   const addItemToCart = (item) => {
-    dispatch({ type: CartAction.AddItem, payload: item });
+    dispatch(createAction(CartAction.AddItem, item));
   };
 
   const substractItemFromCart = (item) => {
-    dispatch({ type: CartAction.SubstractItem, payload: item });
+    dispatch(createAction(CartAction.SubstractItem, item));
   };
 
   const removeItemFromCart = (item) => {
-    dispatch({ type: CartAction.RemoveItem, payload: item });
+    dispatch(createAction(CartAction.RemoveItem, item));
   };
 
   const toggleCart = () => {
-    dispatch({ type: CartAction.ToggleCart });
+    dispatch(createAction(CartAction.ToggleCart));
   };
 
   const value = {

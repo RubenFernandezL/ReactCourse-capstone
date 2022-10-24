@@ -4,8 +4,20 @@ import NavBar from "./components/core/navbar/navbar.container";
 import Authentication from "./routes/auth/auth.container";
 import { Shop } from "./routes/shop/shop.container";
 import CheckOutContainerComponent from "./routes/check-out/check-out.container";
+import { useEffect } from "react";
+import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
+import { setCurrentUser } from "./store/user/user.actions";
+import { useDispatch } from "react-redux";
 
 const App = () => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    return onAuthStateChangedListener((user) => {
+      dispatch(setCurrentUser(user));
+    });
+  });
+
   return (
     <Routes>
       <Route path="/" element={<NavBar></NavBar>}>
