@@ -7,15 +7,24 @@ import CheckOutContainerComponent from "./routes/check-out/check-out.container";
 import { useEffect } from "react";
 import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
 import { setCurrentUser } from "./store/user/user.actions";
+import { setCategories } from "./store/categories/categories.action";
 import { useDispatch } from "react-redux";
-
+import { getCategoriesAndDocuments } from "./utils/firebase/firebase.utils";
 const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    return onAuthStateChangedListener((user) => {
+    onAuthStateChangedListener((user) => {
       dispatch(setCurrentUser(user));
     });
+  });
+
+  useEffect(() => {
+    const getCategoriesMap = async () => {
+      const categoryMap = await getCategoriesAndDocuments();
+      dispatch(setCategories(categoryMap));
+    };
+    getCategoriesMap();
   });
 
   return (
