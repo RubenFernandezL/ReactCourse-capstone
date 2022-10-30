@@ -2,13 +2,16 @@ import ButtonComponent, {
   BUTTON_TYPE,
 } from "../form-components/button/button.component";
 import "./product-card.scss";
-import { useContext } from "react";
-import { CartContext } from "../../../contexts/cart.context";
+import { useDispatch } from "react-redux";
+import { addItem } from "../../../store/cart/cart.actions";
+
 export const ProductCard = ({ product }) => {
-  const { addItemToCart } = useContext(CartContext);
+  const dispatch = useDispatch()
 
   const { name, price, imageUrl } = product;
-  const addProductToCart = () => addItemToCart(product);
+  const addProductToCart = () => {
+    dispatch(addItem(product))
+  };
 
   return (
     <div className="product-card-container">

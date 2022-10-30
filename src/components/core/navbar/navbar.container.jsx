@@ -1,4 +1,4 @@
-import { Fragment, useContext } from "react";
+import { Fragment } from "react";
 import { ReactComponent as CrownLogo } from "../../../assets/crown.svg";
 import {
   NavigationStyles,
@@ -10,12 +10,12 @@ import { Outlet } from "react-router-dom";
 import { userSignOut } from "../../../utils/firebase/firebase.utils";
 import CartIcon from "../../cart-icon/cart-icon.component";
 import CartDropDownComponent from "../../cart-dropdown/cart-dropdown.component";
-import { CartContext } from "../../../contexts/cart.context";
 import { useSelector } from "react-redux";
 import { getCurrentUser } from "../../../store/user/user.selector";
+import { getCart } from "../../../store/cart/cart.selector";
 
 const NavBar = () => {
-  const { isCartOpen } = useContext(CartContext);
+  const { isOpen } = useSelector(getCart);
   const currentUser = useSelector(getCurrentUser);
 
   const logOut = async () => {
@@ -39,7 +39,7 @@ const NavBar = () => {
           <CartIcon></CartIcon>
         </NavLinksContainer>
       </NavigationStyles>
-      {isCartOpen && <CartDropDownComponent></CartDropDownComponent>}
+      {isOpen && <CartDropDownComponent></CartDropDownComponent>}
       <Outlet></Outlet>
     </Fragment>
   );

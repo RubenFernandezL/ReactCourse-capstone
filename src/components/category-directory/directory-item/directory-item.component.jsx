@@ -6,6 +6,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const DirectoryItem = ({ category }) => {
+  console.log(category)
   const { id, title, imageUrl, route } = category;
 
   const navigate = useNavigate();
