@@ -1,6 +1,6 @@
 import { createSelector } from "reselect";
 
-const getStateCart = (state) => state.cart.cart;
+const getStateCart = (state) => state.cart;
 
 export const getIsCartOpen = createSelector(
   [getStateCart],
