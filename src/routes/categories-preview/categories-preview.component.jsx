@@ -4,16 +4,20 @@ import { getCategories } from "../../store/categories/categories.selector.js";
 
 export const CategoriesPreview = () => {
   const categories = useSelector(getCategories);
+
+
+
   //<> es una abreviación de Fragment
   return (
     <>
-      {Object.keys(categories).map((title) => {
-        const products = categories[title];
+      {categories.map((category) => {
+        const products = category.items;
         return (
           <CategoryPreview
-            key={title}
-            title={title}
+            key={category.id}
+            title={category.title}
             products={products}
+            id={category.id}
           ></CategoryPreview>
         );
       })}

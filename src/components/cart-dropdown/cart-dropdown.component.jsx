@@ -7,11 +7,11 @@ import {
   EmptyCartMessage,
 } from "./cart-dropdown.styles";
 import { useDispatch, useSelector } from "react-redux";
-import { getCart } from "../../store/cart/cart.selector";
+import { getCartItems } from "../../store/cart/cart.selector";
 import { toggleCart } from "../../store/cart/cart.actions";
 
 const CartDropDownComponent = () => {
-  const { items } = useSelector(getCart);
+  const items = useSelector(getCartItems);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

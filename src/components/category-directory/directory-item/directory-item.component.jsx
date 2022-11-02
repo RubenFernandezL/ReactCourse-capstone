@@ -6,12 +6,11 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const DirectoryItem = ({ category }) => {
-  console.log(category)
-  const { id, title, imageUrl, route } = category;
+  const { id, title, imageUrl } = category;
 
   const navigate = useNavigate();
 
-  const navigateTo = () => navigate(route);
+  const navigateTo = () => navigate(`shop/category/${id}`)
 
   return (
     <DirectoryItemContainer key={id} onClick={navigateTo}>

@@ -7,7 +7,7 @@ export const Shop = () => {
   return (
     <Routes>
       <Route index element={<CategoriesPreview></CategoriesPreview>}></Route>
-      <Route path=":category" element={<Category></Category>}></Route>
+      <Route path="category/:id" element={<Category></Category>}></Route>
     </Routes>
   );
 };

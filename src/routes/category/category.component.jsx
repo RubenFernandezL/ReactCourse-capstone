@@ -7,17 +7,19 @@ import { useSelector } from "react-redux";
 import { getCategories } from "../../store/categories/categories.selector.js";
 
 const Category = () => {
-  const { category } = useParams();
-  const categories = useSelector(getCategories);
-  const [products, setProducts] = useState(categories[category]);
+  const { id } = useParams();
+  const categories = useSelector(getCategories)
+  const category = categories.filter((category) => category.id === id)?.pop();
+  const [products, setProducts] = useState(category.items);
 
   useEffect(() => {
-    setProducts(categories[category]);
-  }, [category, categories]);
+    setProducts(categories.filter((category) => category.id === id)?.pop()?.items);
+  }, [id, categories]);
+
 
   return (
     <>
-      <h2 className="category-title">{category.toUpperCase()}</h2>
+      <h2 className="category-title">{category.title.toUpperCase()}</h2>
       <div className="category-container">
         {products?.map((product) => (
           <ProductCard key={product.id} product={product}></ProductCard>

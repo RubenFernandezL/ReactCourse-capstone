@@ -12,10 +12,10 @@ import CartIcon from "../../cart-icon/cart-icon.component";
 import CartDropDownComponent from "../../cart-dropdown/cart-dropdown.component";
 import { useSelector } from "react-redux";
 import { getCurrentUser } from "../../../store/user/user.selector";
-import { getCart } from "../../../store/cart/cart.selector";
+import { getIsCartOpen } from "../../../store/cart/cart.selector";
 
 const NavBar = () => {
-  const { isOpen } = useSelector(getCart);
+  const isOpen = useSelector(getIsCartOpen);
   const currentUser = useSelector(getCurrentUser);
 
   const logOut = async () => {
