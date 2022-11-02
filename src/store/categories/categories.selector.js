@@ -6,7 +6,7 @@ export const getCategories = createSelector(
   [
     createSelector(
       [getStateCategories],
-      (categoriesSelector) => categoriesSelector.categories
+      (categoriesSelector) => categoriesSelector
     ),
   ],
   (categories) => categories

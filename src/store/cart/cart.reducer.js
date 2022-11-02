@@ -1,14 +1,12 @@
 import { CartAction } from "./cart.types";
 const INITIAL_STATE = {
-  cart: {
-    isOpen: false,
-    items: [],
-    totalItems: 0,
-    totalPrice: 0,
-  },
+  isOpen: false,
+  items: [],
+  totalItems: 0,
+  totalPrice: 0,
 };
 
-export const cartReducer = (state = INITIAL_STATE, action) => {
+export const cart = (state = INITIAL_STATE, action) => {
   const { type, payload } = action;
 
   switch (type) {
@@ -21,10 +19,7 @@ export const cartReducer = (state = INITIAL_STATE, action) => {
     case CartAction.ToggleCart:
       return {
         ...state,
-        cart: {
-          ...state.cart,
-          isOpen: !state.cart.isOpen,
-        },
+        isOpen: !state.isOpen,
       };
     default:
       return state;
@@ -32,80 +27,60 @@ export const cartReducer = (state = INITIAL_STATE, action) => {
 };
 
 const addItem = (item, state) => {
-  console.log(state.cart.items);
-  if (isItemInCart(item, state.cart.items))
+  console.log(state.items);
+  if (isItemInCart(item, state.items))
     return {
       ...state,
-      cart: {
-        ...state.cart,
-        items: state.cart.items.map((cartItem) =>
-          cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        ),
-        totalItems: state.cart.totalItems + 1,
-        totalPrice: state.cart.totalPrice + item.price,
-      },
+      items: state.items.map((cartItem) =>
+        cartItem.id === item.id
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      ),
+      totalItems: state.totalItems + 1,
+      totalPrice: state.totalPrice + item.price,
     };
   return {
     ...state,
-    cart: {
-      ...state.cart,
-      items: [...state.cart.items, { ...item, quantity: 1 }],
-      totalItems: state.cart.totalItems + 1,
-      totalPrice: state.cart.totalPrice + item.price,
-    },
+    items: [...state.items, { ...item, quantity: 1 }],
+    totalItems: state.totalItems + 1,
+    totalPrice: state.totalPrice + item.price,
   };
 };
 
 const substractItem = (item, state) => {
-  const substractedItem = state.cart.items.find(
+  const substractedItem = state.items.find(
     (cartItem) => cartItem.id === item.id
   );
   if (!substractedItem) return state;
   if (substractedItem.quantity === 1)
     return {
       ...state,
-      cart: {
-        ...state.cart,
-        items: state.cart.items.filter(
-          (cartItem) => cartItem.id !== substractedItem.id
-        ),
-        totalItems: state.cart.totalItems - 1,
-        totalPrice: state.cart.totalPrice - substractedItem.price,
-      },
+      items: state.items.filter(
+        (cartItem) => cartItem.id !== substractedItem.id
+      ),
+      totalItems: state.totalItems - 1,
+      totalPrice: state.totalPrice - substractedItem.price,
     };
   return {
     ...state,
-    cart: {
-      ...state.cart,
-      items: state.cart.items.map((cartItem) =>
-        cartItem.id === substractedItem.id
-          ? { ...cartItem, quantity: cartItem.quantity - 1 }
-          : cartItem
-      ),
-      totalItems: state.cart.totalItems - 1,
-      totalPrice: state.cart.totalPrice - substractedItem.price,
-    },
+    items: state.items.map((cartItem) =>
+      cartItem.id === substractedItem.id
+        ? { ...cartItem, quantity: cartItem.quantity - 1 }
+        : cartItem
+    ),
+    totalItems: state.totalItems - 1,
+    totalPrice: state.totalPrice - substractedItem.price,
   };
 };
 
 const deleteItem = (item, state) => {
-  const removedItem = state.cart.items.find(
-    (cartItem) => cartItem.id === item.id
-  );
+  const removedItem = state.items.find((cartItem) => cartItem.id === item.id);
   if (!removedItem) return state;
   return {
     ...state,
-    cart: {
-      ...state.cart,
-      items: state.cart.items.filter(
-        (cartItem) => cartItem.id !== removedItem.id
-      ),
-      totalItems: state.cart.totalItems - removedItem.quantity,
-      totalPrice:
-        state.cart.totalPrice - removedItem.price * removedItem.quantity,
-    },
+    items: state.items.filter((cartItem) => cartItem.id !== removedItem.id),
+    totalItems: state.totalItems - removedItem.quantity,
+    totalPrice: state.totalPrice - removedItem.price * removedItem.quantity,
   };
 };
 
