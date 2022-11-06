@@ -9,5 +9,15 @@ export const getCategories = createSelector(
       (categoriesSelector) => categoriesSelector
     ),
   ],
-  (categories) => categories
+  (categories) => categories.categories
+);
+
+export const getCategoriesStatus = createSelector(
+  [
+    createSelector(
+      [getStateCategories],
+      (categoriesStatusSelector) => categoriesStatusSelector
+    ),
+  ],
+  (categories) => categories.isLoading
 );

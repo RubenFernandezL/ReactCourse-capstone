@@ -1,3 +1,5 @@
 export const CategoriesAction = {
-  SetCategories: "SetCategories",
+  FetchCategories: "FetchCategories",
+  FetchCategoriesSuccess: "FetchCategoriesSuccess",
+  FetchCategoriesFailure: "FetchCategoriesFailure",
 };

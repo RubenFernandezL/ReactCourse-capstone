@@ -7,9 +7,8 @@ import CheckOutContainerComponent from "./routes/check-out/check-out.container";
 import { useEffect } from "react";
 import { onAuthStateChangedListener } from "./utils/firebase/firebase.utils";
 import { setCurrentUser } from "./store/user/user.actions";
-import { setCategories } from "./store/categories/categories.action";
+import { fetchCategories } from "./store/categories/categories.action";
 import { useDispatch } from "react-redux";
-import { getCategoriesAndDocuments } from "./utils/firebase/firebase.utils";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -21,11 +20,7 @@ const App = () => {
   });
 
   useEffect(() => {
-    const getCategories = async () => {
-      const categories = await getCategoriesAndDocuments();
-      dispatch(setCategories(categories));
-    };
-    getCategories();
+    dispatch(fetchCategories());
   });
 
   return (
